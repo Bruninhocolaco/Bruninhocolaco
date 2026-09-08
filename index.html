@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WonderHaul • Autorização Mercado Livre</title>
+  <style>
+    :root { color-scheme: light; font-family: Arial, Helvetica, sans-serif; }
+    body { margin: 0; background: #f5f7fb; color: #172033; display: grid; place-items: center; min-height: 100vh; }
+    .card { width: min(680px, calc(100% - 32px)); background: #fff; border-radius: 18px; padding: 28px; box-shadow: 0 14px 40px rgba(0,0,0,.10); }
+    h1 { margin: 0 0 10px; font-size: 26px; }
+    p { line-height: 1.5; }
+    .ok { color: #16794b; font-weight: 700; }
+    .warn { color: #9a5a00; font-weight: 700; }
+    .code { margin-top: 14px; padding: 14px; background: #f0f3f8; border-radius: 10px; word-break: break-all; font-family: Consolas, monospace; }
+    button { margin-top: 14px; border: 0; border-radius: 10px; padding: 11px 16px; cursor: pointer; font-weight: 700; }
+    small { display: block; margin-top: 18px; color: #667085; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>WonderHaul • Mercado Livre</h1>
+    <p id="status" class="warn">Aguardando retorno da autorização…</p>
+    <div id="codeBox" hidden>
+      <p>O Mercado Livre retornou o código de autorização abaixo:</p>
+      <div id="code" class="code"></div>
+      <button id="copyBtn" type="button">Copiar código</button>
+    </div>
+    <p id="errorBox" hidden></p>
+    <small>Esta página não envia o código para nenhum servidor. Ela apenas lê os parâmetros da própria URL no seu navegador.</small>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    const error = params.get('error');
+    const errorDescription = params.get('error_description');
+    const status = document.getElementById('status');
+    const codeBox = document.getElementById('codeBox');
+    const errorBox = document.getElementById('errorBox');
+
+    if (code) {
+      status.textContent = 'Autorização concluída.';
+      status.className = 'ok';
+      document.getElementById('code').textContent = code;
+      codeBox.hidden = false;
+      document.getElementById('copyBtn').addEventListener('click', async () => {
+        await navigator.clipboard.writeText(code);
+        document.getElementById('copyBtn').textContent = 'Copiado!';
+      });
+    } else if (error) {
+      status.textContent = 'A autorização não foi concluída.';
+      errorBox.hidden = false;
+      errorBox.textContent = `${error}${errorDescription ? ': ' + errorDescription : ''}`;
+    } else {
+      status.textContent = 'Página de retorno pronta. Você pode usar esta URL como Redirect URI.';
+      status.className = 'ok';
+    }
+  </script>
+</body>
+</html>
